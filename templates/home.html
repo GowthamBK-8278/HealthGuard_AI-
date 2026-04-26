@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthGuard AI+ | Smart Healthcare Assistant</title>
+    <meta name="description" content="AI-powered symptom analyzer and smart health assistant. Get instant diagnosis, dengue risk alerts, and expert medical advice.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-logo">⚕️ HealthGuard AI+</div>
+    <div class="nav-links">
+        <button class="btn-sos" onclick="findHospitals()">🚨 SOS</button>
+        <button class="btn-pharmacy" onclick="findPharmacies()">💊 Pharmacies</button>
+        <a href="/">Home</a>
+        <a href="/health">Analyzer</a>
+        <a href="/report">Reports</a>
+        <a href="/diet">Diet</a>
+        <a href="/chatbot">Assistant</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge">🟢 AI Health Engine Active</div>
+    <h1>Your Personal<br><span>AI Doctor</span><br>Is Here</h1>
+    <p class="hero-sub">Instantly analyze symptoms, detect disease risks, and receive expert-level medical advice powered by AI — all in seconds.</p>
+    <div class="hero-btns">
+        <button class="btn-primary" onclick="window.location.href='/health'">🧠 Analyze Symptoms</button>
+        <button class="btn-outline" onclick="window.location.href='/chatbot'">🤖 Talk to Assistant</button>
+    </div>
+    <div class="hero-visual">
+        <div class="pulse-ring">🩺</div>
+    </div>
+</section>
+
+
+<!-- NEWS TICKER -->
+<div class="ticker-wrap">
+    <div class="ticker">
+        <span>📰 <b>WHO Advisory:</b> Rising dengue cases across South Asia — stay protected &nbsp;|&nbsp; </span>
+        <span>💧 <b>Health Tip:</b> Drink 8+ glasses of water daily to prevent dehydration &nbsp;|&nbsp; </span>
+        <span>🦟 <b>Alert:</b> Mosquito season active — use repellents &nbsp;|&nbsp; </span>
+        <span>🩺 <b>Reminder:</b> Annual health checkup recommended for all adults &nbsp;|&nbsp; </span>
+        <span>🧠 <b>Mental Health:</b> 7-8 hours of sleep boosts immunity by 40% &nbsp;|&nbsp; </span>
+        <span>🥦 <b>Nutrition:</b> Vitamin C-rich foods help fight seasonal infections &nbsp;|&nbsp; </span>
+        <span>📰 <b>WHO Advisory:</b> Rising dengue cases across South Asia — stay protected &nbsp;|&nbsp; </span>
+        <span>💧 <b>Health Tip:</b> Drink 8+ glasses of water daily to prevent dehydration &nbsp;|&nbsp; </span>
+        <span>🦟 <b>Alert:</b> Mosquito season active — use repellents &nbsp;|&nbsp; </span>
+        <span>🩺 <b>Reminder:</b> Annual health checkup recommended for all adults &nbsp;|&nbsp; </span>
+        <span>🧠 <b>Mental Health:</b> 7-8 hours of sleep boosts immunity by 40% &nbsp;|&nbsp; </span>
+        <span>🥦 <b>Nutrition:</b> Vitamin C-rich foods help fight seasonal infections &nbsp;|&nbsp; </span>
+    </div>
+</div>
+
+<!-- STATS -->
+<section class="stats-section">
+    <div class="stat-card">
+        <div class="stat-num" id="s1">0</div>
+        <div class="stat-label">Conditions Detected</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num" id="s2">0</div>
+        <div class="stat-label">Symptoms Tracked</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num" id="s3">0</div>
+        <div class="stat-label">Medical Specialties</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num" id="s4">0</div>
+        <div class="stat-label">Instant Response (ms)</div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+    <h2 class="section-title">Everything You Need</h2>
+    <p class="section-sub">Powered by a clinical-grade AI engine — built for speed, accuracy, and clarity</p>
+    <div class="features-grid">
+        <a href="/health" style="text-decoration:none;color:inherit">
+        <div class="feature-card" style="--accent:#00e5ff">
+            <span class="feature-icon">🧠</span>
+            <div class="feature-title">Smart Symptom Analyzer</div>
+            <div class="feature-desc">Select or type your symptoms and get instant AI-powered diagnosis across 40+ conditions with specific advice.</div>
+            <span class="feature-tag">Open Analyzer →</span>
+        </div>
+        </a>
+        <a href="/chatbot" style="text-decoration:none;color:inherit">
+        <div class="feature-card" style="--accent:#00ffb3">
+            <span class="feature-icon">🤖</span>
+            <div class="feature-title">AI Health Assistant</div>
+            <div class="feature-desc">Chat with your personal AI health assistant 24/7. Ask anything about symptoms, medicines, or health advice.</div>
+            <span class="feature-tag" style="color:#00ffb3;border-color:#00ffb3">Open Chat →</span>
+        </div>
+        </a>
+        <div class="feature-card" style="--accent:#7b61ff">
+            <span class="feature-icon">🦟</span>
+            <div class="feature-title">Dengue Risk Detection</div>
+            <div class="feature-desc">Specialized dengue risk scoring with red alert banners when your symptoms match dengue patterns.</div>
+            <span class="feature-tag" style="color:#7b61ff;border-color:#7b61ff">Built-In</span>
+        </div>
+        <div class="feature-card" style="--accent:#ff6b6b">
+            <span class="feature-icon">💊</span>
+            <div class="feature-title">Medicine Recommendations</div>
+            <div class="feature-desc">Get condition-specific medicine suggestions, dosage notes, and know which specialist to visit.</div>
+            <span class="feature-tag" style="color:#ff6b6b;border-color:#ff6b6b">Doctor-Level</span>
+        </div>
+        <div class="feature-card" style="--accent:#ffd166">
+            <span class="feature-icon">⚡</span>
+            <div class="feature-title">Instant Results</div>
+            <div class="feature-desc">No waiting. Get a full detailed health report in under a second with severity rating and specialist referral.</div>
+            <span class="feature-tag" style="color:#ffd166;border-color:#ffd166">Real-Time</span>
+        </div>
+        <div class="feature-card" style="--accent:#06d6a0">
+            <span class="feature-icon">🌦️</span>
+            <div class="feature-title">Live Weather Monitor</div>
+            <div class="feature-desc">Real-time local weather data to understand how climate affects your health conditions and recovery.</div>
+            <span class="feature-tag" style="color:#06d6a0;border-color:#06d6a0">Live Data</span>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-section">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Three simple steps to get your health report</p>
+    <div class="steps-grid">
+        <div class="step-row">
+            <div class="step-num">01</div>
+            <div class="step-text">
+                <h3>Select or Type Symptoms</h3>
+                <p>Choose from quick-select chips like Fever, Headache, Rash — or type any symptom manually into the search bar.</p>
+            </div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">02</div>
+            <div class="step-text">
+                <h3>AI Engine Analyzes</h3>
+                <p>Our medical AI scores your symptoms against a database of 40+ conditions across 10 specialties, instantly finding the best match.</p>
+            </div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">03</div>
+            <div class="step-text">
+                <h3>Get a Doctor-Level Report</h3>
+                <p>Receive a detailed card with: condition name, severity, observations, specific advice, suggested medicines, and specialist recommendation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2>Start Your Health Check<br><span style="background:linear-gradient(135deg,#00e5ff,#00ffb3);-webkit-background-clip:text;background-clip:text;color:transparent">Right Now — It's Free</span></h2>
+    <p>No signup needed. No waiting. Just instant, accurate health insights.</p>
+    <button class="btn-primary" onclick="window.location.href='/health'" style="font-size:18px;padding:18px 52px">
+        🧠 Analyze My Symptoms
+    </button>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+    Made with ❤️ by <span>HealthGuard AI+</span> &nbsp;|&nbsp; © 2026 All Rights Reserved &nbsp;|&nbsp;
+    <span>⚠️ For informational purposes only — always consult a certified doctor</span>
+</footer>
+
+<!-- WEATHER BADGE -->
+<div class="weather-bar" id="weather">🌤️ Loading weather...</div>
+
+<script>
+// ── PARTICLE CANVAS ──
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+const particles = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.3,
+    dx: (Math.random() - 0.5) * 0.4,
+    dy: (Math.random() - 0.5) * 0.4,
+    alpha: Math.random() * 0.5 + 0.1
+}));
+
+function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,229,255,${p.alpha})`;
+        ctx.fill();
+        p.x += p.dx; p.y += p.dy;
+        if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ── COUNTER ANIMATION ──
+function animateCount(id, target, suffix='') {
+    let start = 0;
+    const step = Math.ceil(target / 60);
+    const el = document.getElementById(id);
+    const timer = setInterval(() => {
+        start = Math.min(start + step, target);
+        el.textContent = start + suffix;
+        if(start >= target) clearInterval(timer);
+    }, 24);
+}
+window.addEventListener('load', () => {
+    animateCount('s1', 40, '+');
+    animateCount('s2', 120, '+');
+    animateCount('s3', 10, '+');
+    animateCount('s4', 800, '');
+});
+
+// ── WEATHER ──
+async function loadWeather() {
+    try {
+        let res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=11.0&longitude=78.0&current_weather=true");
+        let data = await res.json();
+        const w = data.current_weather;
+        const icon = w.temperature > 35 ? '🔥' : w.temperature > 28 ? '☀️' : w.temperature > 20 ? '🌤️' : '🌧️';
+        document.getElementById("weather").innerHTML = `${icon} <span>${w.temperature}°C</span> &nbsp;|&nbsp; Wind: <span>${w.windspeed} km/h</span>`;
+    } catch (e) {
+        document.getElementById("weather").innerHTML = "❌ Weather unavailable";
+    }
+}
+loadWeather();
+</script>
+
+</body>
+</html>

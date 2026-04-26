@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Analyzer | HealthGuard AI+</title>
+    <meta name="description" content="AI-powered symptom analyzer. Select your symptoms and get instant doctor-level diagnosis, advice, and medicine suggestions.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="nav-logo">⚕️ HealthGuard AI+</a>
+    <div class="nav-links">
+        <button class="btn-sos" onclick="findHospitals()">🚨 SOS</button>
+        <button class="btn-pharmacy" onclick="findPharmacies()">💊 Pharmacies</button>
+        <a href="/">Home</a>
+        <a href="/health" class="active">Analyzer</a>
+        <a href="/report">Reports</a>
+        <a href="/diet">Diet</a>
+        <a href="/chatbot">Assistant</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="page-badge">🧠 AI Diagnosis Engine</div>
+        <h1>Smart <span>Health Analyzer</span></h1>
+        <p>Select or type your symptoms — get an instant doctor-level health report</p>
+    </div>
+
+    <!-- ANALYZER CARD -->
+    <div class="analyzer-card">
+
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="symptoms" placeholder="Type symptoms (e.g. fever, headache, rash...)" />
+        </div>
+
+        <div class="chips-label">Quick select symptoms</div>
+        <div class="chips-row">
+            <span class="chip" onclick="add('fever',this)">🌡️ Fever</span>
+            <span class="chip" onclick="add('headache',this)">🤕 Headache</span>
+            <span class="chip" onclick="add('body pain',this)">💢 Body Pain</span>
+            <span class="chip" onclick="add('rash',this)">🔴 Rash</span>
+            <span class="chip" onclick="add('joint pain',this)">🦴 Joint Pain</span>
+            <span class="chip" onclick="add('cough',this)">😮‍💨 Cough</span>
+            <span class="chip" onclick="add('cold',this)">🤧 Cold</span>
+            <span class="chip" onclick="add('nausea',this)">🤢 Nausea</span>
+            <span class="chip" onclick="add('fatigue',this)">😴 Fatigue</span>
+            <span class="chip" onclick="add('vomiting',this)">🤮 Vomiting</span>
+            <span class="chip" onclick="add('diarrhea',this)">⚠️ Diarrhea</span>
+            <span class="chip" onclick="add('chills',this)">🥶 Chills</span>
+            <span class="chip" onclick="add('sore throat',this)">🫁 Sore Throat</span>
+            <span class="chip" onclick="add('stomach pain',this)">🤧 Stomach Pain</span>
+            <span class="chip" onclick="add('dizziness',this)">💫 Dizziness</span>
+            <span class="chip" onclick="add('weakness',this)">😔 Weakness</span>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-analyze" onclick="analyze()">🔍 Analyze Symptoms</button>
+            <button class="btn-clear" onclick="clearAll()">✖ Clear</button>
+        </div>
+
+        <div id="resultBox"></div>
+
+    </div>
+    
+    <!-- BMI CALCULATOR CARD -->
+    <div class="analyzer-card" style="margin-top: 30px;">
+        <div class="page-badge">⚖️ Health Metrics</div>
+        <h2 style="margin-bottom: 20px;">BMI & Health Risk Calculator</h2>
+        <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+                <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Weight (kg)</label>
+                <input type="number" id="bmi-weight" placeholder="e.g. 70" style="width:100%; padding:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:white; outline:none;" />
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Height (cm)</label>
+                <input type="number" id="bmi-height" placeholder="e.g. 175" style="width:100%; padding:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:white; outline:none;" />
+            </div>
+        </div>
+        <button class="btn-analyze" style="width:100%;" onclick="calculateBMI()">⚖️ Calculate BMI</button>
+        <div id="bmi-result" style="display:none; margin-top:20px; padding:20px; background:rgba(0,229,255,0.05); border-radius:15px; border:1px solid rgba(0,229,255,0.2);"></div>
+    </div>
+</div>
+
+<script>
+// Particles
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+const pts = Array.from({length:60},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.3,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:Math.random()*0.4+0.1}));
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,255,${p.a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width)p.dx*=-1;if(p.y<0||p.y>canvas.height)p.dy*=-1;});requestAnimationFrame(draw);}
+draw();
+
+function add(val, el){
+    let box = document.getElementById("symptoms");
+    if(box.value.includes(val)){ box.value = box.value.replace(', '+val,'').replace(val+', ','').replace(val,'').trim(); el.classList.remove('selected'); return; }
+    box.value += (box.value ? ", " : "") + val;
+    el.classList.add('selected');
+}
+
+function clearAll(){
+    document.getElementById("symptoms").value = "";
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    let r = document.getElementById("resultBox");
+    r.style.display = "none"; r.innerHTML = "";
+}
+
+function analyze(){
+    let sym = document.getElementById("symptoms").value.trim();
+    let result = document.getElementById("resultBox");
+    if(sym === ""){
+        result.style.display = "block";
+        result.innerHTML = "<p style='text-align:center;color:rgba(255,255,255,0.5);padding:20px'>⚠️ Please enter or select at least one symptom.</p>";
+        return;
+    }
+    result.style.display = "block";
+    result.innerHTML = "<div class='analyzing'>⏳ Analyzing your symptoms...</div>";
+
+    fetch('/analyze-symptoms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symptoms:sym})})
+    .then(r=>r.json())
+    .then(data=>{
+        let matchedHTML = data.matched && data.matched.length ? data.matched.map(m=>`<span class='matched-chip'>${m}</span>`).join(" ") : "<span style='color:rgba(255,255,255,0.4)'>None detected</span>";
+        let adviceHTML = data.advice ? data.advice.map(a=>`<li>${a}</li>`).join("") : "<li>Consult a General Physician</li>";
+        let medHTML = data.medicines ? data.medicines.map(m=>`<span class='med-tag'>💊 ${m}</span>`).join(" ") : "";
+        let obsHTML = data.observations ? data.observations.map(o=>`<li>${o}</li>`).join("") : "";
+        let dengueHTML = data.dengue_risk ? `<div class='alert-dengue'>🦟 <b>Dengue Risk: POSSIBLE</b> — Get a blood test (NS1 Antigen) done immediately.</div>` : "";
+
+        let sosHTML = "";
+        if (data.severity.includes("High") || data.severity.includes("Emergency")) {
+            sosHTML = `<div class="sos-action-card" style="width:100%; text-align:center; margin-bottom: 16px;">
+                🚨 Critical severity detected. Please seek medical help immediately.
+                <br><br><button class="btn-sos pulsing" onclick="findHospitals()">🚑 Find Nearby Hospitals</button>
+            </div>`;
+        }
+
+        result.innerHTML = `
+        <div>
+            <div class='result-header'>
+                <div>
+                    <div class='result-condition'>🩺 ${data.condition}</div>
+                    <div class='result-severity'>Severity: ${data.severity}</div>
+                </div>
+                <div class='result-specialist'>👨‍⚕️ ${data.specialist}</div>
+            </div>
+            ${sosHTML}
+            ${dengueHTML}
+            <div class='result-block'><b>🔍 Matched Symptoms</b><div style='margin-top:6px'>${matchedHTML}</div></div>
+            
+            <div class='result-block' style='background:rgba(255,255,255,0.02); border-left:none; text-align:center;'>
+                <b>📊 Clinical Analysis Chart</b>
+                <div style='max-width:300px; margin:20px auto;'>
+                    <canvas id="healthChart"></canvas>
+                </div>
+            </div>
+
+            <div class='result-block'><b>📋 Observations</b><ul>${obsHTML}</ul></div>
+            <div class='result-block'><b>💡 Doctor's Advice</b><ul>${adviceHTML}</ul></div>
+            <div class='result-block'><b>💊 Suggested Medicines</b><div style='margin-top:8px'>${medHTML}</div></div>
+            <p class='disclaimer'>⚠️ AI-based preliminary analysis only. Always consult a certified doctor for proper diagnosis.</p>
+        </div>`;
+
+        // Initialize Chart
+        const ctxChart = document.getElementById('healthChart').getContext('2d');
+        new Chart(ctxChart, {
+            type: 'radar',
+            data: {
+                labels: ['Symptoms Match', 'Severity Score', 'Diagnostic Confidence', 'Risk Factor', 'Treatment Clarity'],
+                datasets: [{
+                    label: 'Clinical Profile',
+                    data: [
+                        data.matched ? Math.min(100, data.matched.length * 25) : 10,
+                        data.severity.includes("High") ? 90 : data.severity.includes("Moderate") ? 60 : 30,
+                        data.score ? Math.min(100, data.score * 20) : 75,
+                        data.dengue_risk ? 95 : 40,
+                        85
+                    ],
+                    backgroundColor: 'rgba(0, 229, 255, 0.2)',
+                    borderColor: '#00e5ff',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00e5ff'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255,255,255,0.1)' },
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } },
+                        ticks: { display: false },
+                        suggestedMin: 0, suggestedMax: 100
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    })
+    .catch(()=>{ result.innerHTML = "<p style='text-align:center;color:#ff8080;padding:20px'>❌ Error connecting to server. Please try again.</p>"; });
+}
+</script>
+</body>
+</html>

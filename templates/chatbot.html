@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant | HealthGuard AI+</title>
+    <meta name="description" content="Real AI health assistant with photo analysis. Chat, upload medical photos, and get expert-level health insights powered by Gemini AI.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="chatbot-page">
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="nav-logo">⚕️ HealthGuard AI+</a>
+    <div class="nav-links">
+        <button class="btn-sos" onclick="findHospitals()">🚨 SOS</button>
+        <button class="btn-pharmacy" onclick="findPharmacies()">💊 Pharmacies</button>
+        <a href="/">Home</a>
+        <a href="/health">Analyzer</a>
+        <a href="/report">Reports</a>
+        <a href="/diet">Diet</a>
+        <a href="/chatbot" class="active">Assistant</a>
+    </div>
+</nav>
+
+<!-- CHAT LAYOUT -->
+<div class="chat-layout">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+        <div class="bot-identity">
+            <div class="bot-avatar">🤖</div>
+            <div class="bot-info">
+                <h3>HealthGuard AI Assistant</h3>
+                <div class="status"><span class="status-dot"></span>Gemini AI — Online</div>
+            </div>
+        </div>
+        <div class="mode-tabs">
+            <button class="mode-tab active" id="tabChat" onclick="setMode('chat')">💬 Chat</button>
+            <button class="mode-tab" id="tabImage" onclick="setMode('image')">📸 Photo Analysis</button>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="chatBox">
+        <div class="bot-msg">👋 Hi! I'm your <strong>HealthGuard AI Assistant</strong>, powered by Gemini AI.<br><br>I can help you with:<br>• 💬 <strong>Symptom analysis</strong> — describe what you're feeling<br>• 📸 <strong>Photo analysis</strong> — upload a photo of a wound, rash, skin condition etc.<br>• 💊 <strong>Medicine advice</strong> — what to take and when<br>• 🚨 <strong>Emergency guidance</strong> — when to go to the hospital<br><br>How can I help you today?</div>
+    </div>
+
+    <!-- QUICK SUGGESTIONS -->
+    <div class="suggestions" id="suggestions">
+        <button class="sug-chip" onclick="quickSend('I have fever and joint pain since 2 days')">🌡️ Fever & Joint Pain</button>
+        <button class="sug-chip" onclick="quickSend('I have a bad headache and feel nauseous')">🤕 Headache & Nausea</button>
+        <button class="sug-chip" onclick="quickSend('I have a rash on my skin, what could it be?')">🔴 Skin Rash</button>
+        <button class="sug-chip" onclick="quickSend('What are the early symptoms of dengue?')">🦟 Dengue Symptoms</button>
+        <button class="sug-chip" onclick="triggerImageUpload()">📸 Upload a Photo</button>
+    </div>
+
+    <!-- IMAGE PREVIEW BAR -->
+    <div id="imagePreviewBar">
+        <img id="previewThumb" src="" alt="preview" />
+        <div style="flex:1">
+            <div class="preview-name" id="previewName">image.jpg</div>
+            <input class="context-input" id="imageContext" placeholder="Optional: Describe where this is on your body or any details..." />
+        </div>
+        <button class="remove-img" onclick="removeImage()">✕</button>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Ask about symptoms, medicines, or upload a photo..." />
+            <button class="icon-btn" onclick="triggerImageUpload()" title="Upload photo">📎</button>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" />
+
+<script>
+// ── PARTICLES ──
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+const pts = Array.from({length:55},()=>({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.1+0.3, dx:(Math.random()-0.5)*0.3, dy:(Math.random()-0.5)*0.3, a:Math.random()*0.3+0.05 }));
+(function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(0,229,255,${p.a})`; ctx.fill(); p.x+=p.dx; p.y+=p.dy; if(p.x<0||p.x>canvas.width)p.dx*=-1; if(p.y<0||p.y>canvas.height)p.dy*=-1; }); requestAnimationFrame(draw); })();
+
+// ── STATE ──
+let isSending = false;
+let conversationHistory = [];
+let selectedFile = null;
+let selectedFileB64 = null;
+let currentMode = 'chat';
+
+// ── KEYBOARD ──
+document.getElementById('userInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') { e.preventDefault(); sendMessage(); }
+});
+
+// ── MODE SWITCH ──
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('tabChat').classList.toggle('active', mode==='chat');
+    document.getElementById('tabImage').classList.toggle('active', mode==='image');
+    if(mode === 'image') {
+        triggerImageUpload();
+    }
+}
+
+// ── QUICK SEND ──
+function quickSend(text) {
+    document.getElementById('userInput').value = text;
+    sendMessage();
+}
+
+// ── IMAGE HANDLING ──
+function triggerImageUpload() {
+    document.getElementById('fileInput').click();
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const result = ev.target.result;
+        selectedFileB64 = result.split(',')[1];
+        document.getElementById('previewThumb').src = result;
+        document.getElementById('previewName').textContent = file.name;
+        document.getElementById('imagePreviewBar').style.display = 'flex';
+        document.getElementById('userInput').placeholder = 'Add a description (optional)...';
+        document.getElementById('tabImage').classList.add('active');
+        document.getElementById('tabChat').classList.remove('active');
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
+function removeImage() {
+    selectedFile = null;
+    selectedFileB64 = null;
+    document.getElementById('imagePreviewBar').style.display = 'none';
+    document.getElementById('imageContext').value = '';
+    document.getElementById('userInput').placeholder = 'Ask about symptoms, medicines, or upload a photo...';
+}
+
+// ── RENDER MARKDOWN-LIKE TEXT ──
+function renderText(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^## (.*$)/gm, '<strong style="font-size:15px;color:#00e5ff;display:block;margin:8px 0 4px">$1</strong>')
+        .replace(/^# (.*$)/gm, '<strong style="font-size:16px;color:#00e5ff;display:block;margin:8px 0 4px">$1</strong>')
+        .replace(/^[-•] (.*$)/gm, '<div style="padding-left:12px">• $1</div>')
+        .replace(/\n/g, '<br>');
+}
+
+// ── APPEND MESSAGES ──
+function appendMsg(cls, html, isHTML=false) {
+    const chatBox = document.getElementById('chatBox');
+    const div = document.createElement('div');
+    div.className = cls;
+    if(isHTML) div.innerHTML = html;
+    else div.textContent = html;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return div;
+}
+
+// ── MAIN SEND ──
+async function sendMessage() {
+    if(isSending) return;
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+
+    // Must have either message or image
+    if(!message && !selectedFileB64) return;
+
+    isSending = true;
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('suggestions').style.display = 'none';
+    input.value = '';
+
+    // ── IMAGE ANALYSIS MODE ──
+    if(selectedFileB64) {
+        const context = document.getElementById('imageContext').value.trim();
+        const imgSrc = document.getElementById('previewThumb').src;
+        const mimeType = selectedFile.type || 'image/jpeg';
+
+        // Show image in chat
+        const chatBox = document.getElementById('chatBox');
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'image-msg';
+        imgDiv.innerHTML = `<div class="image-preview-wrap"><img src="${imgSrc}" alt="uploaded"/><span class="image-caption">${context || 'Photo uploaded for analysis'}</span></div>`;
+        chatBox.appendChild(imgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        removeImage();
+
+        // Typing
+        const typing = document.createElement('div');
+        typing.className = 'typing-bubble';
+        typing.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+        chatBox.appendChild(typing);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const res = await fetch('/analyze-image', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ image: selectedFileB64 || document.getElementById('previewThumb').src.split(',')[1], mime_type: mimeType, context })
+            });
+            const data = await res.json();
+            typing.className = 'analysis-card';
+            typing.innerHTML = renderText(data.result || '⚠️ Could not analyze image.');
+        } catch(e) {
+            typing.className = 'bot-msg';
+            typing.textContent = '❌ Image analysis failed. Please try again.';
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+        isSending = false;
+        document.getElementById('sendBtn').disabled = false;
+        return;
+    }
+
+    // ── TEXT CHAT MODE ──
+    appendMsg('user-msg', message);
+
+    // Add to history
+    conversationHistory.push({ role: 'user', text: message });
+
+    // Typing
+    const chatBox = document.getElementById('chatBox');
+    const typing = document.createElement('div');
+    typing.className = 'typing-bubble';
+    typing.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    chatBox.appendChild(typing);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        const res = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message, history: conversationHistory.slice(0,-1) })
+        });
+        const data = await res.json();
+        const reply = data.reply || '⚠️ No response.';
+        typing.className = 'bot-msg';
+        typing.innerHTML = renderText(reply);
+
+        // Smart SOS Detection
+        const lowerReply = reply.toLowerCase();
+        if (lowerReply.includes("emergency") || lowerReply.includes("red flag") || lowerReply.includes("severe") || lowerReply.includes("seek immediate")) {
+            typing.innerHTML += `<div class="sos-action-card">🚨 Critical condition detected. <button class="btn-sos pulsing" onclick="findHospitals()" style="margin-top:8px;">🚑 Find Nearby Hospitals</button></div>`;
+        }
+
+        conversationHistory.push({ role: 'model', text: reply });
+        if(conversationHistory.length > 20) conversationHistory = conversationHistory.slice(-20);
+
+    } catch(e) {
+        typing.className = 'bot-msg';
+        typing.textContent = '❌ Connection error. Please try again.';
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+}
+
+// Also store b64 when file is selected for the send handler
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const result = ev.target.result;
+        selectedFileB64 = result.split(',')[1];
+        document.getElementById('previewThumb').src = result;
+        document.getElementById('previewName').textContent = file.name;
+        document.getElementById('imagePreviewBar').style.display = 'flex';
+        document.getElementById('userInput').placeholder = 'Describe the issue or body part (optional)...';
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+</script>
+</body>
+</html>

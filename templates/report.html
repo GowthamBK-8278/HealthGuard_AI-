@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Analyzer | HealthGuard AI+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="health-page">
+
+<canvas id="particles"></canvas>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="nav-logo">⚕️ HealthGuard AI+</a>
+    <div class="nav-links">
+        <button class="btn-sos" onclick="findHospitals()">🚨 SOS</button>
+        <button class="btn-pharmacy" onclick="findPharmacies()">💊 Pharmacies</button>
+        <a href="/">Home</a>
+        <a href="/health">Analyzer</a>
+        <a href="/report" class="active">Reports</a>
+        <a href="/diet">Diet</a>
+        <a href="/chatbot">Assistant</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <div class="page-badge">📄 Clinical Intelligence</div>
+        <h1>AI <span>Report Analyzer</span></h1>
+        <p>Upload your blood tests, prescriptions, or lab reports for an instant plain-English summary</p>
+    </div>
+
+    <div class="analyzer-card">
+        <div id="upload-area" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed rgba(0,229,255,0.3); border-radius: 20px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; background: rgba(0,229,255,0.02);">
+            <span style="font-size: 40px; display: block; margin-bottom: 15px;">📤</span>
+            <b style="color: #00e5ff;">Click to upload a medical report</b>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 8px;">Supports JPG, PNG, WEBP</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleReportUpload(event)" />
+
+        <div id="report-preview" style="display:none; margin-top: 20px; text-align: center;">
+            <img id="preview-img" src="" style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(0,229,255,0.3);" />
+            <br>
+            <button class="btn-analyze" style="margin-top: 15px; width: 100%;" onclick="analyzeReport()">🚀 Analyze My Report</button>
+        </div>
+
+        <div id="report-result" style="display:none; margin-top: 28px; padding: 25px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); line-height: 1.8;">
+            <!-- Results here -->
+        </div>
+    </div>
+</div>
+
+<script>
+let reportB64 = null;
+let mimeType = null;
+
+function handleReportUpload(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    mimeType = file.type;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        reportB64 = ev.target.result.split(',')[1];
+        document.getElementById('preview-img').src = ev.target.result;
+        document.getElementById('report-preview').style.display = 'block';
+        document.getElementById('upload-area').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+async function analyzeReport() {
+    const resultBox = document.getElementById('report-result');
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = '<div class="analyzing">🧪 Parsing clinical data...</div>';
+
+    try {
+        const res = await fetch('/analyze-report', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ image: reportB64, mime_type: mimeType })
+        });
+        const data = await res.json();
+        
+        // Simple markdown-like rendering
+        let html = data.result
+            .replace(/\*\*(.*?)\*\*/g, '<b style="color:#00e5ff">$1</b>')
+            .replace(/\n/g, '<br>');
+            
+        resultBox.innerHTML = `
+            <div style="font-size: 15px; color: rgba(255,255,255,0.9);">
+                ${html}
+            </div>
+            <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                ⚠️ AI summary only. This does not replace a doctor\'s consultation.
+            </p>
+        `;
+    } catch(e) {
+        resultBox.innerHTML = '<p style="color:#ff8080">❌ Error connecting to AI service.</p>';
+    }
+}
+</script>
+
+<script>
+// Particles
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+const pts = Array.from({length:60},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.3,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:Math.random()*0.4+0.1}));
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,255,${p.a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width)p.dx*=-1;if(p.y<0||p.y>canvas.height)p.dy*=-1;});requestAnimationFrame(draw);}
+draw();
+</script>
+</body>
+</html>

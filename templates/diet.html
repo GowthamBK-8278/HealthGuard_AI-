@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Planner | HealthGuard AI+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="health-page">
+
+<canvas id="particles"></canvas>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="nav-logo">⚕️ HealthGuard AI+</a>
+    <div class="nav-links">
+        <button class="btn-sos" onclick="findHospitals()">🚨 SOS</button>
+        <button class="btn-pharmacy" onclick="findPharmacies()">💊 Pharmacies</button>
+        <a href="/">Home</a>
+        <a href="/health">Analyzer</a>
+        <a href="/report">Reports</a>
+        <a href="/diet" class="active">Diet</a>
+        <a href="/chatbot">Assistant</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <div class="page-badge">🥗 Precision Nutrition</div>
+        <h1>AI <span>Diet Planner</span></h1>
+        <p>Get a personalized nutrition plan based on your age, weight, and health goals</p>
+    </div>
+
+    <div class="analyzer-card">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
+            <div>
+                <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Age</label>
+                <input type="number" id="diet-age" placeholder="e.g. 25" style="width:100%; padding:14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:white; outline:none;" />
+            </div>
+            <div>
+                <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Weight (kg)</label>
+                <input type="number" id="diet-weight" placeholder="e.g. 68" style="width:100%; padding:14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:white; outline:none;" />
+            </div>
+        </div>
+        
+        <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Primary Goal</label>
+        <select id="diet-goal" style="width:100%; padding:14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:white; outline:none; margin-bottom: 20px;">
+            <option value="Weight Loss">📉 Weight Loss</option>
+            <option value="Muscle Gain">💪 Muscle Gain</option>
+            <option value="General Fitness">🏃 General Fitness</option>
+            <option value="Energy Boost">⚡ Energy Boost</option>
+        </select>
+
+        <label style="display:block; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Health Conditions (Optional)</label>
+        <input type="text" id="diet-conditions" placeholder="e.g. Diabetes, High BP, None..." style="width:100%; padding:14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:white; outline:none; margin-bottom: 30px;" />
+
+        <button class="btn-analyze" style="width:100%;" onclick="generateDiet()">🍎 Generate Diet Plan</button>
+
+        <div id="diet-result" style="display:none; margin-top: 30px; padding: 25px; background: rgba(0,255,179,0.03); border-radius: 24px; border: 1px solid rgba(0,255,179,0.1); line-height: 1.8;">
+            <!-- Plan here -->
+        </div>
+    </div>
+</div>
+
+<script>
+async function generateDiet() {
+    const age = document.getElementById('diet-age').value;
+    const weight = document.getElementById('diet-weight').value;
+    const goal = document.getElementById('diet-goal').value;
+    const conditions = document.getElementById('diet-conditions').value || 'None';
+    
+    if(!age || !weight) {
+        alert('Please fill in age and weight');
+        return;
+    }
+
+    const resultBox = document.getElementById('diet-result');
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = '<div class="analyzing">🥗 Crafting your nutrition plan...</div>';
+
+    try {
+        const res = await fetch('/generate-diet', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ age, weight, goal, conditions })
+        });
+        const data = await res.json();
+        
+        let html = data.plan
+            .replace(/\*\*(.*?)\*\*/g, '<b style="color:#00ffb3">$1</b>')
+            .replace(/\n/g, '<br>');
+            
+        resultBox.innerHTML = `
+            <div style="font-size: 15px; color: rgba(255,255,255,0.9);">
+                ${html}
+            </div>
+        `;
+    } catch(e) {
+        resultBox.innerHTML = '<p style="color:#ff8080">❌ Error connecting to AI service.</p>';
+    }
+}
+</script>
+
+<script>
+// Particles
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+const pts = Array.from({length:60},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.3,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:Math.random()*0.4+0.1}));
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,255,${p.a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width)p.dx*=-1;if(p.y<0||p.y>canvas.height)p.dy*=-1;});requestAnimationFrame(draw);}
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+[
+    {
+        "condition": "Dengue Fever",
+        "keywords": ["fever", "joint pain", "rash", "body pain", "headache", "eye pain", "fatigue", "nausea"],
+        "required": ["fever"],
+        "min_match": 3,
+        "dengue_risk": true,
+        "severity": "High \u26a0\ufe0f",
+        "observations": [
+            "High fever with severe joint and muscle pain",
+            "Possible platelet drop \u2014 monitor closely",
+            "Rash may appear after 2\u20133 days of fever"
+        ],
+        "advice": [
+            "Visit a doctor immediately for a blood test (CBC / NS1 Antigen)",
+            "Drink plenty of fluids and ORS solution to stay hydrated",
+            "Take Paracetamol only \u2014 avoid Aspirin and Ibuprofen",
+            "Monitor platelet count every 24 hours",
+            "Rest completely and avoid mosquito bites to stop spread"
+        ],
+        "medicines": ["Paracetamol (Crocin/Dolo 650)", "ORS Solution", "Vitamin C supplements"],
+        "specialist": "Infectious Disease Specialist / General Physician"
+    },
+    {
+        "condition": "Viral Fever",
+        "keywords": ["fever", "body pain", "fatigue", "headache", "chills", "sweating", "weakness"],
+        "required": ["fever"],
+        "min_match": 2,
+        "dengue_risk": false,
+        "severity": "Moderate \ud83e\udfe1",
+        "observations": [
+            "Fever with generalized body pain and fatigue",
+            "Likely viral origin \u2014 no antibiotics needed",
+            "Symptoms usually resolve in 5\u20137 days"
+        ],
+        "advice": [
+            "Take Paracetamol to control fever (every 6 hours if needed)",
+            "Drink warm fluids \u2014 water, soups, herbal tea",
+            "Take complete bed rest for 2\u20133 days",
+            "Avoid cold foods and direct AC air",
+            "Visit a doctor if fever exceeds 103\u00b0F or lasts more than 5 days"
+        ],
+        "medicines": ["Paracetamol (Crocin/Dolo)", "Vitamin C", "Electrolyte drinks"],
+        "specialist": "General Physician"
+    },
+    {
+        "condition": "Common Cold / Flu",
+        "keywords": ["cold", "cough", "runny nose", "sneezing", "sore throat", "congestion", "mild fever"],
+        "required": [],
+        "min_match": 2,
+        "dengue_risk": false,
+        "severity": "Mild \ud83d\udfe2",
+        "observations": [
+            "Upper respiratory tract infection detected",
+            "Sneezing and nasal discharge indicate viral cold",
+            "Usually self-limiting within 7 days"
+        ],
+        "advice": [
+            "Inhale steam twice a day to clear nasal congestion",
+            "Drink warm water with honey and ginger",
+            "Take antihistamines if you have runny nose and sneezing",
+            "Avoid cold drinks and ice cream",
+            "Gargle with warm salt water for sore throat relief"
+        ],
+        "medicines": ["Cetirizine (antihistamine)", "Paracetamol", "Strepsils (throat lozenges)", "Vicks VapoRub"],
+        "specialist": "General Physician (if symptoms worsen)"
+    },
+    {
+        "condition": "Migraine / Tension Headache",
+        "keywords": ["headache", "nausea", "sensitivity to light", "eye pain", "dizziness", "neck pain"],
+        "required": ["headache"],
+        "min_match": 1,
+        "dengue_risk": false,
+        "severity": "Moderate \ud83e\udfe1",
+        "observations": [
+            "Headache without fever indicates tension or migraine",
+            "Light sensitivity and nausea suggest migraine episode",
+            "Stress and dehydration are common triggers"
+        ],
+        "advice": [
+            "Rest in a dark, quiet room away from screens",
+            "Apply cold or warm compress on forehead/neck",
+            "Stay well-hydrated \u2014 drink at least 2\u20133 litres of water",
+            "Avoid caffeine, alcohol, and strong perfumes",
+            "Take pain relief medication if pain is severe",
+            "Track your triggers in a headache diary"
+        ],
+        "medicines": ["Ibuprofen (Brufen)", "Paracetamol", "Sumatriptan (for severe migraine \u2014 doctor's prescription)"],
+        "specialist": "Neurologist (if recurring more than 4 times/month)"
+    },
+    {
+        "condition": "Skin Allergy / Dermatitis",
+        "keywords": ["rash", "itching", "hives", "redness", "swelling", "skin irritation"],
+        "required": ["rash"],
+        "min_match": 1,
+        "dengue_risk": false,
+        "severity": "Mild to Moderate \ud83e\udfe1",
+        "observations": [
+            "Rash without fever suggests allergic or contact dermatitis",
+            "Could be triggered by food, soap, or environmental allergens",
+            "Monitor if rash spreads or is accompanied by breathing difficulty"
+        ],
+        "advice": [
+            "Apply calamine lotion or hydrocortisone cream on the rash",
+            "Take an antihistamine (cetirizine) to reduce itching",
+            "Avoid scratching \u2014 it can cause infection",
+            "Identify and avoid the allergen (food, soap, cloth, etc.)",
+            "Go to emergency if you feel throat tightness or breathing difficulty (anaphylaxis)"
+        ],
+        "medicines": ["Cetirizine (10mg)", "Calamine lotion", "Hydrocortisone cream (mild)", "Betadine (if open skin)"],
+        "specialist": "Dermatologist / Allergist"
+    },
+    {
+        "condition": "Arthritis / Joint Pain",
+        "keywords": ["joint pain", "stiffness", "swelling", "knee pain", "back pain", "shoulder pain", "difficulty moving"],
+        "required": ["joint pain"],
+        "min_match": 1,
+        "dengue_risk": false,
+        "severity": "Moderate \ud83e\udfe1",
+        "observations": [
+            "Joint pain without fever suggests arthritis or muscle strain",
+            "Morning stiffness is a hallmark of rheumatoid arthritis",
+            "Sudden severe joint swelling may indicate gout"
+        ],
+        "advice": [
+            "Apply warm compress to affected joints for 15 minutes",
+            "Gentle stretching and physiotherapy exercises daily",
+            "Avoid sitting in one position for long hours",
+            "Maintain healthy weight to reduce joint pressure",
+            "Consult doctor for X-ray or blood tests (RA Factor, Uric Acid)",
+            "Avoid self-medicating with strong painkillers long-term"
+        ],
+        "medicines": ["Ibuprofen (Brufen/Combiflam)", "Diclofenac gel (topical)", "Calcium + Vitamin D supplements"],
+        "specialist": "Orthopedic / Rheumatologist"
+    },
+    {
+        "condition": "Gastroenteritis (Stomach Infection)",
+        "keywords": ["vomiting", "diarrhea", "stomach pain", "nausea", "cramps", "loose stools", "food poisoning"],
+        "required": [],
+        "min_match": 2,
+        "dengue_risk": false,
+        "severity": "Moderate \u26a0\ufe0f",
+        "observations": [
+            "Nausea, vomiting and diarrhea indicate GI infection",
+            "Likely caused by contaminated food or water",
+            "Risk of dehydration \u2014 monitor fluid intake carefully"
+        ],
+        "advice": [
+            "Drink ORS (Oral Rehydration Solution) every 20 minutes",
+            "Eat bland food \u2014 rice, banana, toast, boiled vegetables",
+            "Avoid dairy, spicy food, and caffeine until fully recovered",
+            "Take probiotics to restore gut bacteria",
+            "Go to hospital if vomiting lasts more than 12 hours or blood in stool"
+        ],
+        "medicines": ["ORS Solution (Electral/Pedialyte)", "Ondansetron (anti-nausea)", "Loperamide (for diarrhea)", "Probiotics (Enterogermina)"],
+        "specialist": "Gastroenterologist / General Physician"
+    },
+    {
+        "condition": "Malaria",
+        "keywords": ["fever", "chills", "shivering", "sweating", "body pain", "headache", "fatigue", "cyclic fever"],
+        "required": ["fever", "chills"],
+        "min_match": 3,
+        "dengue_risk": false,
+        "severity": "High \u26a0\ufe0f",
+        "observations": [
+            "Cyclic fever with chills and sweating is a classic malaria pattern",
+            "Transmitted by Anopheles mosquito bites",
+            "Blood smear test (Peripheral Smear) is needed for confirmation"
+        ],
+        "advice": [
+            "Visit a doctor immediately for a malaria rapid test or blood smear",
+            "Take antimalarial drugs only as prescribed by a doctor",
+            "Drink plenty of fluids to prevent dehydration",
+            "Use mosquito nets and repellents to prevent spread",
+            "Complete the full course of antimalarial medication even if feeling better"
+        ],
+        "medicines": ["Chloroquine / Artemisinin (doctor prescribed)", "Paracetamol (for fever control)", "ORS"],
+        "specialist": "Infectious Disease Specialist / General Physician"
+    },
+    {
+        "condition": "Typhoid Fever",
+        "keywords": ["fever", "stomach pain", "weakness", "loss of appetite", "constipation", "diarrhea", "headache", "fatigue"],
+        "required": ["fever"],
+        "min_match": 3,
+        "dengue_risk": false,
+        "severity": "High \u26a0\ufe0f",
+        "observations": [
+            "Sustained high fever with stomach pain suggests typhoid",
+            "Caused by Salmonella Typhi bacteria via contaminated food/water",
+            "Widal test or blood culture needed for diagnosis"
+        ],
+        "advice": [
+            "See a doctor immediately \u2014 typhoid needs antibiotic treatment",
+            "Eat only soft, easy-to-digest food (khichdi, curd rice, soups)",
+            "Drink boiled and cooled water only",
+            "Avoid raw vegetables, street food, and outside water",
+            "Complete the full antibiotic course \u2014 do not stop early"
+        ],
+        "medicines": ["Azithromycin / Ciprofloxacin (doctor prescribed)", "Paracetamol", "ORS"],
+        "specialist": "General Physician / Infectious Disease Specialist"
+    },
+    {
+        "condition": "Muscle Strain / Fatigue",
+        "keywords": ["body pain", "weakness", "fatigue", "muscle ache", "tiredness", "exhaustion"],
+        "required": [],
+        "min_match": 1,
+        "dengue_risk": false,
+        "severity": "Mild \ud83d\udfe2",
+        "observations": [
+            "Body pain without fever suggests overexertion or muscle strain",
+            "Fatigue may also be due to poor sleep or nutritional deficiency",
+            "Monitor if pain is localized to one area \u2014 could be injury"
+        ],
+        "advice": [
+            "Take complete rest for 1\u20132 days",
+            "Apply warm compress or heating pad to sore muscles",
+            "Stay hydrated and eat protein-rich foods",
+            "Do light stretching after rest",
+            "Take Vitamin B12 and Iron supplements if fatigue is chronic",
+            "Consult a doctor if weakness persists more than a week"
+        ],
+        "medicines": ["Ibuprofen (topical gel)", "Multivitamin (Revital/Supradyn)", "Vitamin B12 supplements"],
+        "specialist": "General Physician / Physiotherapist"
+    },
+    {
+        "condition": "COVID-19 / Respiratory Viral Infection",
+        "keywords": ["fever", "cough", "fatigue", "loss of taste", "loss of smell", "breathing difficulty", "sore throat", "body pain"],
+        "required": ["fever"],
+        "min_match": 3,
+        "dengue_risk": false,
+        "severity": "Moderate to High \u26a0\ufe0f",
+        "observations": [
+            "Fever with cough and loss of taste/smell are COVID-19 warning signs",
+            "Breathing difficulty warrants immediate medical attention",
+            "Self-isolate immediately to prevent community spread"
+        ],
+        "advice": [
+            "Get a COVID-19 antigen test or RT-PCR done immediately",
+            "Self-isolate in a well-ventilated room for at least 7\u201310 days",
+            "Monitor SpO2 (oxygen level) using a pulse oximeter \u2014 below 94% = emergency",
+            "Take Paracetamol for fever and body pain",
+            "Stay well-hydrated and eat nutritious food",
+            "Call emergency services if breathing becomes labored"
+        ],
+        "medicines": ["Paracetamol (Dolo 650)", "Vitamin C + Zinc", "Vitamin D3", "ORS (if dehydrated)"],
+        "specialist": "Pulmonologist / General Physician (telemedicine if mild)"
+    }
+]
