@@ -4,7 +4,12 @@ import os, base64, json
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+
+if not api_key:
+    print("⚠️ WARNING: GEMINI_API_KEY not found in .env file. AI features will not work.")
+else:
+    genai.configure(api_key=api_key)
 
 app = Flask(__name__)
 
