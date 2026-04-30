@@ -1,5 +1,5 @@
 // ✅ GLOBAL VARIABLE (TOP LA IRUKANUM)
-let isSending = false;
+var isSending = false;
 
 document.addEventListener("DOMContentLoaded", () => {
 
