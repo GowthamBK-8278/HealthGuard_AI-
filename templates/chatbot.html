@@ -90,7 +90,6 @@ const pts = Array.from({length:55},()=>({ x:Math.random()*canvas.width, y:Math.r
 (function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); pts.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(0,229,255,${p.a})`; ctx.fill(); p.x+=p.dx; p.y+=p.dy; if(p.x<0||p.x>canvas.width)p.dx*=-1; if(p.y<0||p.y>canvas.height)p.dy*=-1; }); requestAnimationFrame(draw); })();
 
 // ── STATE ──
-let isSending = false;
 let conversationHistory = [];
 let selectedFile = null;
 let selectedFileB64 = null;
@@ -271,24 +270,6 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight;
     isSending = false;
     document.getElementById('sendBtn').disabled = false;
-}
-
-// Also store b64 when file is selected for the send handler
-function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if(!file) return;
-    selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-        const result = ev.target.result;
-        selectedFileB64 = result.split(',')[1];
-        document.getElementById('previewThumb').src = result;
-        document.getElementById('previewName').textContent = file.name;
-        document.getElementById('imagePreviewBar').style.display = 'flex';
-        document.getElementById('userInput').placeholder = 'Describe the issue or body part (optional)...';
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
 }
 </script>
 </body>
